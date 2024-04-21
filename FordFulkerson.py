@@ -1,3 +1,7 @@
+# we need to install networkx
+import networkx as nx
+import matplotlib.pyplot as plt
+
 class Graph:
     def __init__(self, graph):
         self.graph = graph
@@ -54,3 +58,21 @@ source = 0
 sink = 5
 
 print("Max Flow:", g.ford_fulkerson(source, sink))
+
+
+# Visualization
+G = nx.DiGraph()
+for i in range(len(graph)):
+    G.add_node(i)
+
+for i in range(len(graph)):
+    for j in range(len(graph[i])):
+        if graph[i][j] > 0:
+            G.add_edge(i, j, capacity=graph[i][j])
+
+pos = nx.spring_layout(G)
+nx.draw(G, pos, with_labels=True, node_color='lightblue', font_weight='bold', node_size=2000)
+edge_labels = {(i, j): G.get_edge_data(i, j)['capacity'] for i, j in G.edges()}
+nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
+
+plt.show()
