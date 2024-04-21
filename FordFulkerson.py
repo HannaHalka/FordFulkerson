@@ -20,6 +20,8 @@ class FordFulkersonImpl:
                 if not visited[ind] and val > 0:
                     queue.append(ind)
                     visited[ind] = True
+                    print(ind)
+
                     parent[ind] = u
 
         return visited[t]
@@ -47,8 +49,10 @@ class FordFulkersonImpl:
 
 
 def random_graph_generator():
-    vertex_collection = random.randint(2, 5)
-    weight = random.randint(10, 20)
+    #vertex_collection = random.randint(2, 5)
+    vertex_collection = 5
+    #weight = random.randint(10, 20)
+    weight = 5
     graph = [[0] * vertex_collection for _ in range(vertex_collection)]
 
     for i in range(vertex_collection):
@@ -70,8 +74,8 @@ def print_graph(graph):
 random_graph, _, _ = random_graph_generator()
 ff = FordFulkersonImpl(random_graph)
 source = 0
-endpoint = len(random_graph) - 1
-print("Max Flow:", ff.ford_fulkerson(source, endpoint))
+endpoint = 4
+print("Min Flow:", ff.ford_fulkerson(source, endpoint))
 
 
 # Visualization
