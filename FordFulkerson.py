@@ -2,6 +2,17 @@ import random
 # we need to install networkx and matplotlib
 import networkx as nx
 import matplotlib.pyplot as plt
+import time
+from google.oauth2 import service_account
+import googleapiclient.discovery
+
+
+#SCOPES = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/spreadsheets']
+#SERVICE_ACCOUNT_FILE = # code was deleted because of id and other confidential keys for google sheets
+
+#credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+#service = googleapiclient.discovery.build('sheets', 'v4', credentials=credentials)
+#creds_with_scope = credentials.with_scopes(SCOPES)
 
 class FordFulkersonImpl:
     def __init__(self, graph):
@@ -20,8 +31,6 @@ class FordFulkersonImpl:
                 if not visited[ind] and val > 0:
                     queue.append(ind)
                     visited[ind] = True
-                    print(ind)
-
                     parent[ind] = u
 
         return visited[t]
@@ -49,13 +58,13 @@ class FordFulkersonImpl:
 
 
 def random_graph_generator():
-    #vertex_collection = random.randint(2, 5)
+    #vertex_collection = random.randint(50, 100)
     vertex_collection = 5
-    #weight = random.randint(10, 20)
-    weight = 10
+    #weight = random.randint(20, 30)  # max weight
+    weight = 30
 
-    #density = random.randint(0, 100) / 100
-    density = 0.8
+    #density = random.randint(40, 100) / 100
+    density = 0.75
     edges = int((vertex_collection * (vertex_collection - 1) * density) / 2)
 
     graph = [[0] * vertex_collection for _ in range(vertex_collection)]
@@ -71,7 +80,7 @@ def random_graph_generator():
     for i in range(vertex_collection):
         graph[i][i] = 0
 
-    return graph
+    return graph, vertex_collection
 
 
 def print_graph(graph):
@@ -79,26 +88,45 @@ def print_graph(graph):
         print(row)
 
 
-random_graph = random_graph_generator()
-ff = FordFulkersonImpl(random_graph)
-source = 0
-endpoint = 4
-print("Max Flow:", ff.ford_fulkerson(source, endpoint))
+#def write_to_sheet(data):
+    # code was deleted because of id and other confidential keys for google sheets
 
 
-# Visualization
-G = nx.DiGraph()
-for i in range(len(random_graph)):
-    G.add_node(i)
+NUM_RUNS = 1
 
-for i in range(len(random_graph)):
-    for j in range(len(random_graph[i])):
-        if random_graph[i][j] > 0:
-            G.add_edge(i, j, capacity=random_graph[i][j])
+for _ in range(NUM_RUNS):
+    random_graph, vertex_count = random_graph_generator()
+    ff = FordFulkersonImpl(random_graph)
 
-pos = nx.spring_layout(G)
-nx.draw(G, pos, with_labels=True, node_color='lightblue', font_weight='bold', node_size=2000)
-edge_labels = {(i, j): G.get_edge_data(i, j)['capacity'] for i, j in G.edges()}
-nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
+    #######################################
+    start_time = time.time()
+    #######################################
 
-plt.show()
+    source = 0
+    endpoint = vertex_count - 1
+    max_flow = ff.ford_fulkerson(source, endpoint)
+
+    #######################################
+    elapsed_time = time.time() - start_time
+    #######################################
+
+    print("Max Flow:", max_flow, "Time: ", elapsed_time)
+    #write_to_sheet(elapsed_time)
+
+    # Visualization
+    G = nx.DiGraph()
+    for i in range(len(random_graph)):
+        G.add_node(i)
+
+    for i in range(len(random_graph)):
+        for j in range(len(random_graph[i])):
+            if random_graph[i][j] > 0:
+                G.add_edge(i, j, capacity=random_graph[i][j])
+
+    pos = nx.spring_layout(G)
+    nx.draw(G, pos, with_labels=True, node_color='lightblue', font_weight='bold', node_size=2000)
+    edge_labels = {(i, j): G.get_edge_data(i, j)['capacity'] for i, j in G.edges()}
+    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
+
+    plt.show()
+
