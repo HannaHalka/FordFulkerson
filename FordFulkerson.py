@@ -52,18 +52,26 @@ def random_graph_generator():
     #vertex_collection = random.randint(2, 5)
     vertex_collection = 5
     #weight = random.randint(10, 20)
-    weight = 5
-    graph = [[0] * vertex_collection for _ in range(vertex_collection)]
+    weight = 10
 
-    for i in range(vertex_collection):
-        for j in range(vertex_collection):
-            new_weight = random.randint(0, weight)
+    #density = random.randint(0, 100) / 100
+    density = 0.8
+    edges = int((vertex_collection * (vertex_collection - 1) * density) / 2)
+
+    graph = [[0] * vertex_collection for _ in range(vertex_collection)]
+    edges_collection = set()
+
+    for _ in range(edges):
+        i, j = random.sample(range(vertex_collection), 2) # takes 2 v and creates edge
+        if (i, j) not in edges_collection:
+            new_weight = random.randint(1, weight)
             graph[i][j] = new_weight
+            edges_collection.add((i, j))
 
     for i in range(vertex_collection):
         graph[i][i] = 0
 
-    return graph, vertex_collection, weight
+    return graph
 
 
 def print_graph(graph):
@@ -71,11 +79,11 @@ def print_graph(graph):
         print(row)
 
 
-random_graph, _, _ = random_graph_generator()
+random_graph = random_graph_generator()
 ff = FordFulkersonImpl(random_graph)
 source = 0
 endpoint = 4
-print("Min Flow:", ff.ford_fulkerson(source, endpoint))
+print("Max Flow:", ff.ford_fulkerson(source, endpoint))
 
 
 # Visualization
