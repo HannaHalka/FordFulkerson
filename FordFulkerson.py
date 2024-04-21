@@ -1,9 +1,9 @@
 import random
-# we need to install networkx
+# we need to install networkx and matplotlib
 import networkx as nx
 import matplotlib.pyplot as plt
 
-class Graph:
+class FordFulkersonImpl:
     def __init__(self, graph):
         self.graph = graph
         self.vertices_count = len(graph)
@@ -67,10 +67,11 @@ def print_graph(graph):
         print(row)
 
 
-random_graph = Graph(random_graph_generator())
+random_graph, _, _ = random_graph_generator()
+ff = FordFulkersonImpl(random_graph)
 source = 0
-endpoint = random_graph.vertices_count - 1
-print("Min Flow:", random_graph.ford_fulkerson(source, endpoint))
+endpoint = len(random_graph) - 1
+print("Max Flow:", ff.ford_fulkerson(source, endpoint))
 
 
 # Visualization
