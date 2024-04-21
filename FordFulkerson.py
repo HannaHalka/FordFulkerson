@@ -1,3 +1,4 @@
+import random
 # we need to install networkx
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -45,30 +46,42 @@ class Graph:
         return max_flow
 
 
-# Adjacency list for graph from Cormen's book
-graph = [[0, 16, 13, 0, 0, 0],
-         [0, 0, 10, 12, 0, 0],
-         [0, 4, 0, 0, 14, 0],
-         [0, 0, 9, 0, 0, 20],
-         [0, 0, 0, 7, 0, 4],
-         [0, 0, 0, 0, 0, 0]]
+def random_graph_generator():
+    vertex_collection = random.randint(2, 5)
+    weight = random.randint(10, 20)
+    graph = [[0] * vertex_collection for _ in range(vertex_collection)]
 
-g = Graph(graph)
+    for i in range(vertex_collection):
+        for j in range(vertex_collection):
+            new_weight = random.randint(0, weight)
+            graph[i][j] = new_weight
+
+    for i in range(vertex_collection):
+        graph[i][i] = 0
+
+    return graph, vertex_collection, weight
+
+
+def print_graph(graph):
+    for row in graph:
+        print(row)
+
+
+random_graph = Graph(random_graph_generator())
 source = 0
-sink = 5
-
-print("Max Flow:", g.ford_fulkerson(source, sink))
+endpoint = random_graph.vertices_count - 1
+print("Min Flow:", random_graph.ford_fulkerson(source, endpoint))
 
 
 # Visualization
 G = nx.DiGraph()
-for i in range(len(graph)):
+for i in range(len(random_graph)):
     G.add_node(i)
 
-for i in range(len(graph)):
-    for j in range(len(graph[i])):
-        if graph[i][j] > 0:
-            G.add_edge(i, j, capacity=graph[i][j])
+for i in range(len(random_graph)):
+    for j in range(len(random_graph[i])):
+        if random_graph[i][j] > 0:
+            G.add_edge(i, j, capacity=random_graph[i][j])
 
 pos = nx.spring_layout(G)
 nx.draw(G, pos, with_labels=True, node_color='lightblue', font_weight='bold', node_size=2000)
